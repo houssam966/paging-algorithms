@@ -3,14 +3,15 @@ import java.util.*;
 
 public class Pager {
 
-    private String fifoOutput = "", lruOutput = "", optimalOutput = "";
+    private String fifoOutput = "", lruOutput = "", optimalOutput = "", fifoFinalFrames = "", lruFinalFrames = "", optimalFinalFrames = "";
+
     private int[] pages;
     private int frames;
     private int fifoFaults = 0, lruFaults = 0, optimalFaults = 0;
 
     public static void main(String args[]) {
 
-        int pages[] = {3, 1, 3, 1, 0, 1, 3, 1, 3, 0, 2, 3, 1, 3, 1};
+        int pages[] = {1, 2, 3, 4, 2, 3, 4, 1, 2, 1, 1, 3, 1, 4};
         int frames = 3;
         Pager pager = new Pager(pages, frames);
 
@@ -34,6 +35,7 @@ public class Pager {
 
         // Start from initial page
         for (int i = 0; i < pages.length; i++) {
+
             if (!s.contains(pages[i])) {
                 if (s.size() < frames) {
                     s.add(pages[i]);
@@ -63,7 +65,12 @@ public class Pager {
             } else {
                 fifoOutput += "N";
             }
+            //System.out.println(indexes.peek() + " x" + "x");
         }
+        while(!indexes.isEmpty()){
+            fifoFinalFrames+= indexes.poll() +",";
+        }
+        fifoFinalFrames = fifoFinalFrames.substring(0,fifoFinalFrames.length()-1);
     }
 
     public void lru() {
@@ -129,6 +136,9 @@ public class Pager {
                 indexes.put(pages[i], i);
             }
         }
+
+        s.forEach(frame -> lruFinalFrames+=frame+",");
+        lruFinalFrames = lruFinalFrames.substring(0,lruFinalFrames.length()-1);
     }
 
     public void optimal() {
@@ -162,6 +172,8 @@ public class Pager {
                 optimalOutput += "N";
             }
         }
+        s.forEach(frame -> optimalFinalFrames+=frame+",");
+        optimalFinalFrames = optimalFinalFrames.substring(0,optimalFinalFrames.length()-1);
 
     }
 
@@ -217,12 +229,52 @@ public class Pager {
             System.out.format(format, row);
             System.out.println("------------------------------------------------------------------------------------");
         }
-        System.out.println("Total No. of Page Faults:");
-        System.out.println("FIFO: " + fifoFaults + ", " + fifoOutput);
-        System.out.println("LRU: " + lruFaults + ", " + lruOutput);
-        System.out.println("Optimal: " + optimalFaults + ", " + optimalOutput);
-        System.out.println("YYNNYNNNNNYYYNN".equals(fifoOutput));
-        System.out.println("YYNNYNNNNNYNYNN".equals(lruOutput));
+
+        System.out.println("\n***********************************************************************************************************\n");
+        System.out.printf("%10s %22s %19s %40s\n", "Replacement Algorithm", "No. of Page Faults", "Compact Output", "Final Frames Content (NOT ORDERED)");
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.format("%10s %22s %30s %25s\n", "FIFO", fifoFaults, fifoOutput, fifoFinalFrames);
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.format("%10s %22s %30s %25s\n", "LRU", lruFaults, lruOutput, lruFinalFrames);
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        System.out.format("%10s %22s %30s %25s\n", "Optimal", optimalFaults, optimalOutput, optimalFinalFrames);
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+    }
+
+    public int getFifoFaults() {
+        return fifoFaults;
+    }
+
+    public int getLruFaults() {
+        return lruFaults;
+    }
+
+    public int getOptimalFaults() {
+        return optimalFaults;
+    }
+
+    public String getFifoOutput() {
+        return fifoOutput;
+    }
+
+    public String getLruOutput() {
+        return lruOutput;
+    }
+
+    public String getOptimalOutput() {
+        return optimalOutput;
+    }
+
+    public String getFifoFinalFrames() {
+        return fifoFinalFrames;
+    }
+
+    public String getLruFinalFrames() {
+        return lruFinalFrames;
+    }
+
+    public String getOptimalFinalFrames() {
+        return optimalFinalFrames;
     }
 }
 
